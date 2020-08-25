@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>zTree-Plugin插件封装</title>
+    
+	<!-- import css -->
+	<link rel="stylesheet" href="css/reset.min.css">
+    <style>
+		.container {
+			box-sizing: border-box;
+			margin: 20px auto;
+			padding: 10px;
+			width: 600px;
+			height: 300px;
+			border: 1px dashed #AAA;
+			-webkit-user-select: none;
+			overflow: auto;
+		}
+
+		.level {
+			display: none;
+			font-size: 14px;
+			margin-left: 10px;
+		}
+
+		.level.level0 {
+			display: block;
+			margin-left: 0;
+		}
+
+		.level li {
+			position: relative;
+			padding-left: 15px;
+			line-height: 30px;
+		}
+
+		.level li .icon {
+			position: absolute;
+			left: 0;
+			top: 9px;
+			box-sizing: border-box;
+			width: 12px;
+			height: 12px;
+			line-height: 8px;
+			text-align: center;
+			border: 1px solid #AAA;
+			background: #EEE;
+			cursor: pointer;
+		}
+
+		.level li .icon:after {
+			display: block;
+			content: "+";
+			font-size: 12px;
+			font-style: normal;
+		}
+
+		.level li .icon.open:after {
+			content: "-";
+		}
+
+		.level li .title {
+			color: #000;
+		}
+	</style>
+</head>
+
+<body>
+    <div class="container">
+        <ul class="level level0" id="zTree1"></ul>
+    </div>
+    <div class="container">
+        <ul class="level level0" id="zTree2"></ul>
+    </div>
+    <div class="container">
+        <ul class="level level0" id="zTree3"></ul>
+    </div>
+    <!-- IMPORT JS -->
+    <!--
+        写插件：
+        1. 先把一个的效果/功能实现全了
+        2. 在规划插件的配置和需求
+            + 别人用的时候怎么用
+            + 用的时候可以通过一些相关的配置项，实现哪些不同的功能
+        3. 基于面向对象实现插件化开发
+            + 在面向对象中，每一个插件就是一个类，调用插件就是创建这个类的实例
+            + 【好处】就是可以实现某些信息的私有化，也可以实现某些方法的公有化（公用）
+    -->
+    <script src="./zTree-Plugin.js"></script>
+    <script>
+        //不想通过new来执行，而是作为普通的jquery来执行，最后也相当于创建一个这个类的实例，可以通过类似jquery的方式来实现
+        /* 
+         * 两个参数，
+         * 【第一个参数：指定容器】想给那个容器实现zTree效果
+         * 【第二个参数：指定数据源】传数据源
+         *  
+         * 两个当中任意一个没传都要报错
+         *
+         *  也可以指定数据源的格式，若不是指定的格式，必须解析为某种格式
+         */
+        // $zTree([element],[data]);
+        //要有一个$zTree的方法
+
+        //用的时候先要获取数据
+        function queryData() {
+			return new Promise(resolve => {
+				let xhr = new XMLHttpRequest;
+				xhr.open('GET', './data.json');
+				xhr.onreadystatechange = function () {
+					if (xhr.status === 200 && xhr.readyState === 4) {
+						resolve(JSON.parse(xhr.responseText));
+					}
+				};
+				xhr.send(null);
+			});
+		}
+
+		queryData().then(result => {
+			$zTree(zTree1, result);
+			$zTree(zTree2, result);
+			$zTree(zTree3, result);
+		});
+
+    </script>
+</body>
+
+</html>
